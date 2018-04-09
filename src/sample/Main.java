@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -108,6 +107,7 @@ public class Main extends Application {
                 nextQuestion = true;
                 nextQuestion();
 
+
                 answer.clear();
             } else {
                 response.setText(answer.getText() + "is wrong, please try again");
@@ -117,22 +117,6 @@ public class Main extends Application {
         });
     }
 
-    private void nextQuestion() {
-        if (questionNumber <= 3) {
-            while (nextQuestion) {
-                response.setText("Correct!");
-                fillScene(questionNumber);
-                questionNumber += 1;
-
-                nextQuestion = false;
-            }
-        } else {
-            System.out.println("hello");
-            response.setText("You got: " + numberOfCorrectAnswers + " out of " + numberOfQuestions);
-            check.setDisable(true);
-        }
-
-    }
 
     private void updateScore() {
         score.setText(numberOfCorrectAnswers + " / " + numberOfQuestions);
@@ -142,20 +126,42 @@ public class Main extends Application {
         int counter = 0;
 
         // Countries
-        Country no = new Country("Norway", "oslo", "sample/pictures/no.png");
-        Country swe = new Country("Sweden", "stockholm", "sample/pictures/se.png");
-        Country dk = new Country("Denmark", "copenhagen", "sample/pictures/dk.png");
-        Country us = new Country("USA", "washington", "sample/pictures/us.png");
+        Country no = new Country("Norway", "oslo", "europe", "sample/pictures/no.png");
+        Country swe = new Country("Sweden", "stockholm", "europe", "sample/pictures/se.png");
+        Country dk = new Country("Denmark", "copenhagen", "europe", "sample/pictures/dk.png");
+        Country md = new Country("Moldova", "Chisinau", "europe", "sample/pictures/md.png");
+        Country fr = new Country("France", "Paris", "europe", "sample/pictures/fr.png");
+        Country be = new Country("Belgium", "Brussels", "europe", "sample/pictures/be.png");
+        Country us = new Country("USA", "washington", "north america", "sample/pictures/us.png");
+        Country ca = new Country("Canada", "Ottawa", "north america", "sample/pictures/ca.png");
 
-        countries.put(counter, no);
-        counter++;
 
-        countries.put(counter, swe);
-        counter++;
-        countries.put(counter, dk);
-        counter++;
-        countries.put(counter, us);
-        counter++;
+        countries.put(counter++, no);
+        countries.put(counter++, swe);
+        countries.put(counter++, dk);
+        countries.put(counter++, md);
+        countries.put(counter++, be);
+        countries.put(counter++, fr);
+
+        countries.put(counter++, us);
+        countries.put(counter++, ca);
+
+
+    }
+
+    private void nextQuestion() {
+        if (questionNumber < countries.size()) {
+            while (nextQuestion) {
+                    fillScene(questionNumber);
+                    questionNumber += 1;
+                    nextQuestion = false;
+                    response.setText("Correct!");
+            }
+        } else {
+            System.out.println("hello");
+            response.setText("You got: " + numberOfCorrectAnswers + " out of " + numberOfQuestions);
+            check.setDisable(true);
+        }
 
     }
 

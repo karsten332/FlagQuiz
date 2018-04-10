@@ -1,0 +1,25 @@
+.root{
+    -fx-background-color: black;
+}
+
+.button{
+
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-font-family: "Aerial Black";
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-border-color: purple;
+-fx-border-width: 3px;
+
+}
+
+.label{
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-font-family: "Aerial Black";
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-border-color: purple;
+
+}

@@ -20,8 +20,8 @@ import java.util.*;
 
 public class Main extends Application {
 
-private Populate populate;
-private QuizController quizController;
+    private Populate populate;
+    private QuizController quizController;
 
     private int width = 600;
     private int height = 500;
@@ -29,6 +29,10 @@ private QuizController quizController;
     private int questionNumberStart = 1;
     private int questionNumber = questionNumberStart;
     private boolean nextQuestion = false;
+    private String rightAnswer;
+    private String selectedQuizType;
+
+
 
     //fx
     private Label menuTittleLabel = new Label();
@@ -49,6 +53,9 @@ private QuizController quizController;
 
     private ImageView flagView = new ImageView();
 
+   private String selectedCountryName;
+   private String selectedCapitalName;
+   private String selectedFlagPicturePath;
     @Override
     public void start(Stage primaryStage) throws Exception {
         populate = new Populate();
@@ -66,6 +73,7 @@ private QuizController quizController;
         startQuizStandardBtn.setText("Start world capital quiz!");
         startQuizStandardBtn.setOnAction(e -> {
             populate.populateMapStandardQuiz();
+            findSelectedQuizType("Capital");
             startQuizScene();
             window.setScene(sceneQuiz);
         });
@@ -73,6 +81,7 @@ private QuizController quizController;
         startQuizEuropeCapitalBtn.setText("Europe capitals");
         startQuizEuropeCapitalBtn.setOnAction(event -> {
             populate.populateMapEuropeCapitalQuiz();
+            findSelectedQuizType("Capital");
             startQuizScene();
             window.setScene(sceneQuiz);
         });
@@ -81,13 +90,25 @@ private QuizController quizController;
         startQuizScandinaviaCapitalBtn.setText("Scandinavia capitals");
         startQuizScandinaviaCapitalBtn.setOnAction(event -> {
             populate.populateMapQuizScandinaviaCapitalQuiz();
+            findSelectedQuizType("Capital");
+            startQuizScene();
+            window.setScene(sceneQuiz);
+        });
+
+        Button startQuizAsiaCountryBtn = new Button();
+        startQuizAsiaCountryBtn.setText("Countries in Asia");
+        startQuizAsiaCountryBtn.setOnAction(event -> {
+            populate.populateMapQuizAsiaCountriesQuiz();
+            findSelectedQuizType("Country");
             startQuizScene();
             window.setScene(sceneQuiz);
         });
 
 
+
+
         VBox menuLayout = new VBox(20);
-        menuLayout.getChildren().addAll(menuTittleLabel, startQuizStandardBtn, startQuizEuropeCapitalBtn,startQuizScandinaviaCapitalBtn);
+        menuLayout.getChildren().addAll(menuTittleLabel, startQuizStandardBtn, startQuizEuropeCapitalBtn, startQuizScandinaviaCapitalBtn,startQuizAsiaCountryBtn);
         sceneMenu = new Scene(menuLayout, width, height);
 
         // Standard quiz scene
@@ -107,7 +128,6 @@ private QuizController quizController;
         quizGrid.setGridLinesVisible(false);
 
         // Quizscore scene
-
         Button returnToMenuBtn = new Button();
 
         returnToMenuBtn.setText("Return to menu");
@@ -136,7 +156,7 @@ private QuizController quizController;
         // answer.addEventFilter(Event.ANY,e -> System.out.println(e));
     }
 
-    private void startQuizScene(){
+    private void startQuizScene() {
         flagView.minHeight(1 / height);
         flagView.minWidth(1 / width);
 
@@ -145,14 +165,14 @@ private QuizController quizController;
         check.setText("Check");
         skipQuestionBtn.setText("Skip");
         quizController.setNumberOfQuestions(populate.size());
-        fillScene(0);
+        fillScene(0,selectedQuizType);
         nextQuestion();
     }
 
     private void nextQuestion() {
-        if (questionNumber < populate.size())  {
+        if (questionNumber < populate.size()) {
             while (nextQuestion) {
-                fillScene(questionNumber);
+                fillScene(questionNumber,selectedQuizType);
                 questionNumber += 1;
                 nextQuestion = false;
                 response.setText("");
@@ -164,12 +184,12 @@ private QuizController quizController;
             response.setText("");
         }
     }
-
+    
     private void checkAnswer(String selectedField) {
         String userInputAnswer = answer.getText().toLowerCase();
 
-        if (quizController.checkAnswerString(selectedField,userInputAnswer)) {
-            correctAnswer ++;
+        if (quizController.checkAnswerString(selectedField, userInputAnswer)) {
+            correctAnswer++;
             quizController.setNumberOfCorrectAnswers(correctAnswer);
             updateScore();
             nextQuestion = true;
@@ -177,7 +197,6 @@ private QuizController quizController;
             answer.clear();
             response.setText("Correct!");
             response.setStyle("-fx-text-fill: green");
-
         } else {
 
             response.setText(answer.getText() + "is wrong, please try again");
@@ -185,16 +204,21 @@ private QuizController quizController;
             answer.clear();
         }
     }
-    private void fillScene(int countrySelected) {
+
+    private void fillScene(int countrySelected, String typeofQuiz) {
         Country selected;
-        String selectedCountryName;
-        String selectedCapitalName;
-        String selectedFlagPicturePath;
 
         selected = populate.getCountry(countrySelected);
         selectedCountryName = selected.getCountryName();
         selectedCapitalName = selected.getCapital();
         selectedFlagPicturePath = selected.getFlagPicturePath();
+
+        switch (typeofQuiz){
+            case "Capital" : rightAnswer = selectedCapitalName;
+            break;
+            case "Country" : rightAnswer = selectedCountryName;
+            break;
+        }
 
         questionCapital.setText("What is the capital in " + selectedCountryName + "?");
 
@@ -203,19 +227,19 @@ private QuizController quizController;
         Image flagImg = new Image(selectedFlagPicturePath);
         flagView.setImage(flagImg);
 
-        check.setOnAction((ActionEvent e) -> checkAnswer(selectedCapitalName));
+        check.setOnAction((ActionEvent e) -> checkAnswer(rightAnswer));
 
         sceneQuiz.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if (event.getCode() == KeyCode.ENTER) {
-                    checkAnswer(selectedCapitalName);
+                    checkAnswer(rightAnswer);
                 }
             }
         });
         skipQuestionBtn.setOnAction((ActionEvent e) -> {
             if (skipQuestionBtn.getText().equalsIgnoreCase("skip")) {
-                response.setText("The correct answer is " + selectedCapitalName);
+                response.setText("The correct answer is " + rightAnswer);
                 response.setStyle("-fx-text-fill: white");
                 skipQuestionBtn.setText("next");
                 window.show();
@@ -230,11 +254,19 @@ private QuizController quizController;
         });
     }
 
+    private void findSelectedQuizType(String typeOfQuiz){
+        switch (typeOfQuiz){
+            case "Capital" : selectedQuizType = "Capital";
+                break;
+            case "Country" : selectedQuizType = "Country";
+            break;
+        }
+
+    }
+
     private void updateScore() {
         score.setText(quizController.getNumberOfCorrectAnswers() + " / " + quizController.getNumberOfQuestions());
     }
-
-
 
     public static void main(String[] args) {
         launch(args);

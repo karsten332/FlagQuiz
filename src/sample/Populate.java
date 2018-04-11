@@ -83,4 +83,15 @@ public class Populate {
         add(dk);
         add(is);
     }
+    public void populateMapQuizAsiaCountriesQuiz(){
+        Country cn = new Country("China", "Beijing", "sample/pictures/cn.png");
+        Country in = new Country("India", "New Delhi", "sample/pictures/in.png");
+        Country jp = new Country("Japan", "Tokyo", "sample/pictures/jp.png");
+
+
+        add(cn);
+        add(in);
+        add(jp);
+
+    }
 }

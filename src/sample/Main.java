@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,11 +21,11 @@ import java.util.*;
 public class Main extends Application {
 
 private Populate populate;
+private QuizController quizController;
 
     private int width = 600;
     private int height = 500;
-    private int numberOfCorrectAnswers = 0;
-    private int numberOfQuestions;
+    private int correctAnswer = 0;
     private int questionNumberStart = 1;
     private int questionNumber = questionNumberStart;
     private boolean nextQuestion = false;
@@ -46,13 +47,12 @@ private Populate populate;
     private Button startQuizStandardBtn = new Button();
     private Button startQuizEuropeCapitalBtn = new Button();
 
-
-
     private ImageView flagView = new ImageView();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         populate = new Populate();
+        quizController = new QuizController();
 
         window = primaryStage;
 
@@ -60,16 +60,34 @@ private Populate populate;
         menuTittleLabel.setId("menuTittleLabel");
 
         // Menu scene
+
+        menuTittleLabel.setText("Welcome to Flag quiz press the button to start the quiz you want");
+
         startQuizStandardBtn.setText("Start world capital quiz!");
         startQuizStandardBtn.setOnAction(e -> {
+            populate.populateMapStandardQuiz();
             startQuizScene();
             window.setScene(sceneQuiz);
         });
-        menuTittleLabel.setText("Welcome to Flag quiz press the button to start the quiz you want");
+
         startQuizEuropeCapitalBtn.setText("Europe capitals");
+        startQuizEuropeCapitalBtn.setOnAction(event -> {
+            populate.populateMapEuropeCapitalQuiz();
+            startQuizScene();
+            window.setScene(sceneQuiz);
+        });
+
+        Button startQuizScandinaviaCapitalBtn = new Button();
+        startQuizScandinaviaCapitalBtn.setText("Scandinavia capitals");
+        startQuizScandinaviaCapitalBtn.setOnAction(event -> {
+            populate.populateMapQuizScandinaviaCapitalQuiz();
+            startQuizScene();
+            window.setScene(sceneQuiz);
+        });
+
 
         VBox menuLayout = new VBox(20);
-        menuLayout.getChildren().addAll(menuTittleLabel, startQuizStandardBtn, startQuizEuropeCapitalBtn);
+        menuLayout.getChildren().addAll(menuTittleLabel, startQuizStandardBtn, startQuizEuropeCapitalBtn,startQuizScandinaviaCapitalBtn);
         sceneMenu = new Scene(menuLayout, width, height);
 
         // Standard quiz scene
@@ -95,10 +113,12 @@ private Populate populate;
         returnToMenuBtn.setText("Return to menu");
 
         returnToMenuBtn.setOnAction((ActionEvent e) -> {
-            window.setScene(sceneMenu);
-            numberOfCorrectAnswers = 0;
+            quizController.setNumberOfCorrectAnswers(0);
             questionNumber = 0;
+            populate.clear();
+            populate.setCounter(0);
             updateScore();
+            window.setScene(sceneMenu);
         });
 
         VBox quizScoreLayout = new VBox(20);
@@ -124,9 +144,46 @@ private Populate populate;
         response.setText("");
         check.setText("Check");
         skipQuestionBtn.setText("Skip");
-        numberOfQuestions = populate.size();
+        quizController.setNumberOfQuestions(populate.size());
         fillScene(0);
         nextQuestion();
+    }
+
+    private void nextQuestion() {
+        if (questionNumber < populate.size())  {
+            while (nextQuestion) {
+                fillScene(questionNumber);
+                questionNumber += 1;
+                nextQuestion = false;
+                response.setText("");
+            }
+        } else {
+            playerScore.setText("You got: " + quizController.getNumberOfCorrectAnswers() + " out of " + quizController.getNumberOfQuestions());
+            questionNumber = questionNumberStart;
+            window.setScene(sceneQuizScore);
+            response.setText("");
+        }
+    }
+
+    private void checkAnswer(String selectedField) {
+        String userInputAnswer = answer.getText().toLowerCase();
+
+        if (quizController.checkAnswerString(selectedField,userInputAnswer)) {
+            correctAnswer ++;
+            quizController.setNumberOfCorrectAnswers(correctAnswer);
+            updateScore();
+            nextQuestion = true;
+            nextQuestion();
+            answer.clear();
+            response.setText("Correct!");
+            response.setStyle("-fx-text-fill: green");
+
+        } else {
+
+            response.setText(answer.getText() + "is wrong, please try again");
+            response.setStyle("-fx-text-fill: red");
+            answer.clear();
+        }
     }
     private void fillScene(int countrySelected) {
         Country selected;
@@ -173,47 +230,11 @@ private Populate populate;
         });
     }
 
-    private void checkAnswer(String selectedCapitalName) {
-        String userInputAnswer = answer.getText().toLowerCase();
-        if (selectedCapitalName.toLowerCase().equals(userInputAnswer)) {
-            numberOfCorrectAnswers += 1;
-            updateScore();
-            nextQuestion = true;
-            nextQuestion();
-            answer.clear();
-            response.setText("Correct!");
-            response.setStyle("-fx-text-fill: green");
-
-        } else {
-
-            response.setText(answer.getText() + "is wrong, please try again");
-            response.setStyle("-fx-text-fill: red");
-            answer.clear();
-        }
-    }
-
     private void updateScore() {
-        score.setText(numberOfCorrectAnswers + " / " + numberOfQuestions);
+        score.setText(quizController.getNumberOfCorrectAnswers() + " / " + quizController.getNumberOfQuestions());
     }
 
 
-
-    private void nextQuestion() {
-        if (questionNumber < populate.size()) {
-            while (nextQuestion) {
-                fillScene(questionNumber);
-                questionNumber += 1;
-                nextQuestion = false;
-                response.setText("");
-
-            }
-        } else {
-            playerScore.setText("You got: " + numberOfCorrectAnswers + " out of " + numberOfQuestions);
-            questionNumber = questionNumberStart;
-            window.setScene(sceneQuizScore);
-            response.setText("");
-        }
-    }
 
     public static void main(String[] args) {
         launch(args);

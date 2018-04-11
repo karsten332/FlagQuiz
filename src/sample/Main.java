@@ -19,8 +19,10 @@ import java.util.*;
 
 public class Main extends Application {
 
-    private Map<Integer, Country> countries = new HashMap<>();
+private Populate populate;
 
+    private int width = 600;
+    private int height = 500;
     private int numberOfCorrectAnswers = 0;
     private int numberOfQuestions;
     private int questionNumberStart = 1;
@@ -42,32 +44,37 @@ public class Main extends Application {
     private Button check = new Button();
     private Button skipQuestionBtn = new Button();
     private Button startQuizStandardBtn = new Button();
+    private Button startQuizEuropeCapitalBtn = new Button();
+
+
 
     private ImageView flagView = new ImageView();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        int width = 600;
-        int height = 500;
+        populate = new Populate();
 
         window = primaryStage;
 
+        // CSS id assignment
+        menuTittleLabel.setId("menuTittleLabel");
+
         // Menu scene
-        startQuizStandardBtn.setText("Start quiz!");
-        startQuizStandardBtn.setOnAction(e -> window.setScene(sceneQuiz));
-
+        startQuizStandardBtn.setText("Start world capital quiz!");
+        startQuizStandardBtn.setOnAction(e -> {
+            startQuizScene();
+            window.setScene(sceneQuiz);
+        });
         menuTittleLabel.setText("Welcome to Flag quiz press the button to start the quiz you want");
-
+        startQuizEuropeCapitalBtn.setText("Europe capitals");
 
         VBox menuLayout = new VBox(20);
-        menuLayout.getChildren().addAll(menuTittleLabel, startQuizStandardBtn);
+        menuLayout.getChildren().addAll(menuTittleLabel, startQuizStandardBtn, startQuizEuropeCapitalBtn);
         sceneMenu = new Scene(menuLayout, width, height);
 
         // Standard quiz scene
         GridPane quizGrid = new GridPane();
         sceneQuiz = new Scene(quizGrid, width, height);
-
 
         // adding to quizGrid
         quizGrid.add(questionCapital, 0, 0, 2, 1);
@@ -79,68 +86,55 @@ public class Main extends Application {
         quizGrid.add(score, 0, 5, 1, 1);
         quizGrid.add(response, 1, 5, 1, 1);
 
-
         quizGrid.setGridLinesVisible(false);
-
 
         // Quizscore scene
 
         Button returnToMenuBtn = new Button();
 
         returnToMenuBtn.setText("Return to menu");
-        // returnToMenuBtn.setOnAction(e -> window.setScene(sceneMenu));
 
         returnToMenuBtn.setOnAction((ActionEvent e) -> {
             window.setScene(sceneMenu);
             numberOfCorrectAnswers = 0;
+            questionNumber = 0;
             updateScore();
-
         });
-
 
         VBox quizScoreLayout = new VBox(20);
         quizScoreLayout.getChildren().addAll(playerScore, returnToMenuBtn);
         sceneQuizScore = new Scene(quizScoreLayout, width, height);
 
-
         // Start
         window.setScene(sceneMenu);
         window.setTitle("Flag quiz game");
+        sceneMenu.getStylesheets().add(Main.class.getResource("Style.css").toString());
+        sceneQuiz.getStylesheets().add(Main.class.getResource("Style.css").toString());
+        sceneQuizScore.getStylesheets().add(Main.class.getResource("Style.css").toExternalForm()); // .toExternalForm and toString() is the same
+        primaryStage.show();
 
-        populateMap();
+        // answer.addEventFilter(Event.ANY,e -> System.out.println(e));
+    }
 
+    private void startQuizScene(){
         flagView.minHeight(1 / height);
         flagView.minWidth(1 / width);
 
         fieldInformation.setText("Type in your answer here:");
-
         response.setText("");
         check.setText("Check");
         skipQuestionBtn.setText("Skip");
-        numberOfQuestions = countries.size();
+        numberOfQuestions = populate.size();
         fillScene(0);
-
-        sceneMenu.getStylesheets().add(Main.class.getResource("Style.css").toExternalForm());
-        sceneQuiz.getStylesheets().add(Main.class.getResource("Style.css").toExternalForm());
-        sceneQuizScore.getStylesheets().add(Main.class.getResource("Style.css").toExternalForm());
-        primaryStage.show();
-
-
         nextQuestion();
-
-        //answer.addEventFilter(Event.ANY,e -> System.out.println(e));
     }
-
-
     private void fillScene(int countrySelected) {
-
         Country selected;
         String selectedCountryName;
         String selectedCapitalName;
         String selectedFlagPicturePath;
 
-        selected = countries.get(countrySelected);
-
+        selected = populate.getCountry(countrySelected);
         selectedCountryName = selected.getCountryName();
         selectedCapitalName = selected.getCapital();
         selectedFlagPicturePath = selected.getFlagPicturePath();
@@ -149,10 +143,8 @@ public class Main extends Application {
 
         updateScore();
 
-
         Image flagImg = new Image(selectedFlagPicturePath);
         flagView.setImage(flagImg);
-
 
         check.setOnAction((ActionEvent e) -> checkAnswer(selectedCapitalName));
 
@@ -178,8 +170,6 @@ public class Main extends Application {
                 skipQuestionBtn.setText("skip");
                 window.show();
             }
-
-
         });
     }
 
@@ -202,42 +192,14 @@ public class Main extends Application {
         }
     }
 
-
     private void updateScore() {
         score.setText(numberOfCorrectAnswers + " / " + numberOfQuestions);
     }
 
-    private void populateMap() {
-        int counter = 0;
 
-        // Countries
-        Country no = new Country("Norway", "oslo", "europe", "sample/pictures/no.png");
-        Country swe = new Country("Sweden", "stockholm", "europe", "sample/pictures/se.png");
-        Country dk = new Country("Denmark", "copenhagen", "europe", "sample/pictures/dk.png");
-        Country md = new Country("Moldova", "Chisinau", "europe", "sample/pictures/md.png");
-        Country fr = new Country("France", "Paris", "europe", "sample/pictures/fr.png");
-        Country be = new Country("Belgium", "Brussels", "europe", "sample/pictures/be.png");
-        Country us = new Country("USA", "washington", "north america", "sample/pictures/us.png");
-        Country ca = new Country("Canada", "Ottawa", "north america", "sample/pictures/ca.png");
-
-
-        // Europe
-        countries.put(counter++, no);
-        countries.put(counter++, swe);
-        countries.put(counter++, dk);
-        countries.put(counter++, md);
-        countries.put(counter++, be);
-        countries.put(counter++, fr);
-
-        // NA
-        countries.put(counter++, us);
-        countries.put(counter++, ca);
-
-    }
 
     private void nextQuestion() {
-
-        if (questionNumber < countries.size()) {
+        if (questionNumber < populate.size()) {
             while (nextQuestion) {
                 fillScene(questionNumber);
                 questionNumber += 1;
@@ -247,13 +209,10 @@ public class Main extends Application {
             }
         } else {
             playerScore.setText("You got: " + numberOfCorrectAnswers + " out of " + numberOfQuestions);
-            fillScene(0);
             questionNumber = questionNumberStart;
             window.setScene(sceneQuizScore);
             response.setText("");
         }
-
-
     }
 
     public static void main(String[] args) {

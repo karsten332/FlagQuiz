@@ -23,3 +23,7 @@
     -fx-border-color: purple;
 
 }
+
+#menuTittleLabel{
+    -fx-font-size: 15px;
+}

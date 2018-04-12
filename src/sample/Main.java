@@ -42,8 +42,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Label menuTittleLabel = new Label();
-         int width = 600;
-         int height = 500;
+        int width = 600;
+        int height = 500;
 
         populate = new Populate();
         quizController = new QuizController();
@@ -62,8 +62,7 @@ public class Main extends Application {
         startQuizStandardBtn.setOnAction(e -> {
             populate.populateMapStandardQuiz();
             findSelectedQuizType("Capital");
-            startQuizScene();
-            window.setScene(sceneQuiz);
+            whenAction();
         });
 
         Button startQuizEuropeCapitalBtn = new Button();
@@ -71,8 +70,7 @@ public class Main extends Application {
         startQuizEuropeCapitalBtn.setOnAction(event -> {
             populate.populateMapEuropeCapitalQuiz();
             findSelectedQuizType("Capital");
-            startQuizScene();
-            window.setScene(sceneQuiz);
+            whenAction();
         });
 
         Button startQuizScandinaviaCapitalBtn = new Button();
@@ -80,8 +78,7 @@ public class Main extends Application {
         startQuizScandinaviaCapitalBtn.setOnAction(event -> {
             populate.populateMapQuizScandinaviaCapitalQuiz();
             findSelectedQuizType("Capital");
-            startQuizScene();
-            window.setScene(sceneQuiz);
+            whenAction();
         });
 
         Button startQuizAsiaCountryBtn = new Button();
@@ -89,15 +86,13 @@ public class Main extends Application {
         startQuizAsiaCountryBtn.setOnAction(event -> {
             populate.populateMapQuizAsiaCountriesQuiz();
             findSelectedQuizType("Country");
-            startQuizScene();
-            window.setScene(sceneQuiz);
-        });
+            whenAction();
 
+        });
 
         VBox menuLayout = new VBox(20);
         menuLayout.getChildren().addAll(menuTittleLabel, startQuizStandardBtn, startQuizEuropeCapitalBtn, startQuizScandinaviaCapitalBtn, startQuizAsiaCountryBtn);
         sceneMenu = new Scene(menuLayout, width, height);
-
 
         // Standard quiz scene
         GridPane quizGrid = new GridPane();
@@ -144,6 +139,11 @@ public class Main extends Application {
         // answer.addEventFilter(Event.ANY,e -> System.out.println(e));
     }
 
+    private void whenAction() {
+        startQuizScene();
+        window.setScene(sceneQuiz);
+    }
+
     private void startQuizScene() {
         flagView.setFitHeight(400);
         flagView.setFitWidth(500);
@@ -174,6 +174,7 @@ public class Main extends Application {
 
     /**
      * Check the userinput to the field value in the country object
+     *
      * @param selectedField the field that is going to be compared to the userinput
      */
     private void checkAnswer(String selectedField) {
@@ -189,7 +190,7 @@ public class Main extends Application {
             response.setText("Correct!");
             response.setStyle("-fx-text-fill: green");
         } else {
-            response.setText(answer.getText() + "is wrong, please try again");
+            response.setText(answer.getText() + " is wrong, please try again");
             response.setStyle("-fx-text-fill: red");
             answer.clear();
         }
@@ -197,8 +198,9 @@ public class Main extends Application {
 
     /**
      * Change the content of the quizscene
+     *
      * @param countrySelected the number of the country that is going to be presented in the scene.
-     * @param typeofQuiz the type of quiz the window is going to presents
+     * @param typeofQuiz      the type of quiz the window is going to presents
      */
 
     private void fillScene(int countrySelected, String typeofQuiz) {

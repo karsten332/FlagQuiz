@@ -5,9 +5,6 @@ public class QuizController {
     private int numberOfQuestions;
     private String typeOfQuiz;
 
-
-
-
     public String getTypeOfQuiz() {
         return typeOfQuiz;
     }

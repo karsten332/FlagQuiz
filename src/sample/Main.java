@@ -6,7 +6,6 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -16,15 +15,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.util.*;
-
 public class Main extends Application {
 
     private Populate populate;
     private QuizController quizController;
 
-    private int width = 600;
-    private int height = 500;
     private int correctAnswer = 0;
     private int questionNumberStart = 1;
     private int questionNumber = questionNumberStart;
@@ -33,32 +28,25 @@ public class Main extends Application {
     private String selectedQuizType;
     private String questionTextType;
 
-
     //fx
-    private Label menuTittleLabel = new Label();
     private Label questionCapital = new Label();
     private Label score = new Label();
     private Label response = new Label();
     private Label fieldInformation = new Label();
     private Label playerScore = new Label();
-
     private Stage window;
     private Scene sceneMenu, sceneQuiz, sceneQuizScore;
-
     private TextField answer = new TextField();
     private Button check = new Button();
     private Button skipQuestionBtn = new Button();
-    private Button startQuizStandardBtn = new Button();
-    private Button startQuizEuropeCapitalBtn = new Button();
-
     private ImageView flagView = new ImageView();
-
-    private String selectedCountryName;
-    private String selectedCapitalName;
-    private String selectedFlagPicturePath;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Label menuTittleLabel = new Label();
+         int width = 600;
+         int height = 500;
+
         populate = new Populate();
         quizController = new QuizController();
 
@@ -71,6 +59,7 @@ public class Main extends Application {
 
         menuTittleLabel.setText("Welcome to Flag quiz press the button to start the quiz you want");
 
+        Button startQuizStandardBtn = new Button();
         startQuizStandardBtn.setText("Start world capital quiz!");
         startQuizStandardBtn.setOnAction(e -> {
             populate.populateMapStandardQuiz();
@@ -79,6 +68,7 @@ public class Main extends Application {
             window.setScene(sceneQuiz);
         });
 
+        Button startQuizEuropeCapitalBtn = new Button();
         startQuizEuropeCapitalBtn.setText("Europe capitals");
         startQuizEuropeCapitalBtn.setOnAction(event -> {
             populate.populateMapEuropeCapitalQuiz();
@@ -153,13 +143,10 @@ public class Main extends Application {
         sceneQuiz.getStylesheets().add(Main.class.getResource("Style.css").toString());
         sceneQuizScore.getStylesheets().add(Main.class.getResource("Style.css").toExternalForm()); // .toExternalForm and toString() is the same
         primaryStage.show();
-
         // answer.addEventFilter(Event.ANY,e -> System.out.println(e));
     }
 
     private void startQuizScene() {
-
-
         flagView.setFitHeight(400);
         flagView.setFitWidth(500);
         fieldInformation.setText("Type in your answer here:");
@@ -187,6 +174,10 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Check the userinput to the field value in the country object
+     * @param selectedField the field that is going to be compared to the userinput
+     */
     private void checkAnswer(String selectedField) {
         String userInputAnswer = answer.getText().toLowerCase();
 
@@ -200,15 +191,23 @@ public class Main extends Application {
             response.setText("Correct!");
             response.setStyle("-fx-text-fill: green");
         } else {
-
             response.setText(answer.getText() + "is wrong, please try again");
             response.setStyle("-fx-text-fill: red");
             answer.clear();
         }
     }
 
+    /**
+     * Change the content of the quizscene
+     * @param countrySelected the number of the country that is going to be presented in the scene.
+     * @param typeofQuiz the type of quiz the window is going to presents
+     */
+
     private void fillScene(int countrySelected, String typeofQuiz) {
         Country selected;
+        String selectedCountryName;
+        String selectedCapitalName;
+        String selectedFlagPicturePath;
 
         selected = populate.getCountry(countrySelected);
         selectedCountryName = selected.getCountryName();
@@ -226,7 +225,6 @@ public class Main extends Application {
                 break;
         }
 
-
         updateScore();
 
         Image flagImg = new Image(selectedFlagPicturePath);
@@ -234,12 +232,9 @@ public class Main extends Application {
 
         check.setOnAction((ActionEvent e) -> checkAnswer(rightAnswer));
 
-        sceneQuiz.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if (event.getCode() == KeyCode.ENTER) {
-                    checkAnswer(rightAnswer);
-                }
+        sceneQuiz.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                checkAnswer(rightAnswer);
             }
         });
         skipQuestionBtn.setOnAction((ActionEvent e) -> {
@@ -257,7 +252,6 @@ public class Main extends Application {
                 window.show();
             }
         });
-
         questionCapital.setText(questionTextType);
     }
 

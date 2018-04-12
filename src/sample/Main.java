@@ -31,7 +31,7 @@ public class Main extends Application {
     private boolean nextQuestion = false;
     private String rightAnswer;
     private String selectedQuizType;
-
+    private String questionTextType;
 
 
     //fx
@@ -53,9 +53,10 @@ public class Main extends Application {
 
     private ImageView flagView = new ImageView();
 
-   private String selectedCountryName;
-   private String selectedCapitalName;
-   private String selectedFlagPicturePath;
+    private String selectedCountryName;
+    private String selectedCapitalName;
+    private String selectedFlagPicturePath;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         populate = new Populate();
@@ -105,11 +106,10 @@ public class Main extends Application {
         });
 
 
-
-
         VBox menuLayout = new VBox(20);
-        menuLayout.getChildren().addAll(menuTittleLabel, startQuizStandardBtn, startQuizEuropeCapitalBtn, startQuizScandinaviaCapitalBtn,startQuizAsiaCountryBtn);
+        menuLayout.getChildren().addAll(menuTittleLabel, startQuizStandardBtn, startQuizEuropeCapitalBtn, startQuizScandinaviaCapitalBtn, startQuizAsiaCountryBtn);
         sceneMenu = new Scene(menuLayout, width, height);
+
 
         // Standard quiz scene
         GridPane quizGrid = new GridPane();
@@ -135,6 +135,7 @@ public class Main extends Application {
         returnToMenuBtn.setOnAction((ActionEvent e) -> {
             quizController.setNumberOfCorrectAnswers(0);
             questionNumber = 0;
+            correctAnswer = 0;
             populate.clear();
             populate.setCounter(0);
             updateScore();
@@ -157,22 +158,23 @@ public class Main extends Application {
     }
 
     private void startQuizScene() {
-        flagView.minHeight(1 / height);
-        flagView.minWidth(1 / width);
 
+
+        flagView.setFitHeight(400);
+        flagView.setFitWidth(500);
         fieldInformation.setText("Type in your answer here:");
         response.setText("");
         check.setText("Check");
         skipQuestionBtn.setText("Skip");
         quizController.setNumberOfQuestions(populate.size());
-        fillScene(0,selectedQuizType);
+        fillScene(0, selectedQuizType);
         nextQuestion();
     }
 
     private void nextQuestion() {
         if (questionNumber < populate.size()) {
             while (nextQuestion) {
-                fillScene(questionNumber,selectedQuizType);
+                fillScene(questionNumber, selectedQuizType);
                 questionNumber += 1;
                 nextQuestion = false;
                 response.setText("");
@@ -184,7 +186,7 @@ public class Main extends Application {
             response.setText("");
         }
     }
-    
+
     private void checkAnswer(String selectedField) {
         String userInputAnswer = answer.getText().toLowerCase();
 
@@ -213,14 +215,17 @@ public class Main extends Application {
         selectedCapitalName = selected.getCapital();
         selectedFlagPicturePath = selected.getFlagPicturePath();
 
-        switch (typeofQuiz){
-            case "Capital" : rightAnswer = selectedCapitalName;
-            break;
-            case "Country" : rightAnswer = selectedCountryName;
-            break;
+        switch (typeofQuiz) {
+            case "Capital":
+                rightAnswer = selectedCapitalName;
+                questionTextType = "What is the capital in " + selectedCountryName + "?";
+                break;
+            case "Country":
+                rightAnswer = selectedCountryName;
+                questionTextType = "What is the country name?";
+                break;
         }
 
-        questionCapital.setText("What is the capital in " + selectedCountryName + "?");
 
         updateScore();
 
@@ -252,16 +257,19 @@ public class Main extends Application {
                 window.show();
             }
         });
+
+        questionCapital.setText(questionTextType);
     }
 
-    private void findSelectedQuizType(String typeOfQuiz){
-        switch (typeOfQuiz){
-            case "Capital" : selectedQuizType = "Capital";
+    private void findSelectedQuizType(String typeOfQuiz) {
+        switch (typeOfQuiz) {
+            case "Capital":
+                selectedQuizType = "Capital";
                 break;
-            case "Country" : selectedQuizType = "Country";
-            break;
+            case "Country":
+                selectedQuizType = "Country";
+                break;
         }
-
     }
 
     private void updateScore() {

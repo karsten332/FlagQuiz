@@ -14,14 +14,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
     private Populate populate;
     private QuizController quizController;
-
     private int correctAnswer = 0;
-    private int questionNumberStart = 1;
+    private int questionNumberStart = 0;
     private int questionNumber = questionNumberStart;
-    private boolean nextQuestion = false;
     private String rightAnswer;
     private String selectedQuizType;
     private String questionTextType;
@@ -158,12 +155,9 @@ public class Main extends Application {
 
     private void nextQuestion() {
         if (questionNumber < populate.size()) {
-            while (nextQuestion) {
                 fillScene(questionNumber, selectedQuizType);
                 questionNumber += 1;
-                nextQuestion = false;
                 response.setText("");
-            }
         } else {
             playerScore.setText("You got: " + quizController.getNumberOfCorrectAnswers() + " out of " + quizController.getNumberOfQuestions());
             questionNumber = questionNumberStart;
@@ -184,7 +178,6 @@ public class Main extends Application {
             correctAnswer++;
             quizController.setNumberOfCorrectAnswers(correctAnswer);
             updateScore();
-            nextQuestion = true;
             nextQuestion();
             answer.clear();
             response.setText("Correct!");
@@ -245,7 +238,6 @@ public class Main extends Application {
                 window.show();
                 check.setDisable(true);
             } else {
-                nextQuestion = true;
                 nextQuestion();
                 check.setDisable(false);
                 skipQuestionBtn.setText("skip");

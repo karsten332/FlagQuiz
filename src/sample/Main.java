@@ -58,32 +58,28 @@ public class Main extends Application {
         startQuizStandardBtn.setText("Start world capital quiz!");
         startQuizStandardBtn.setOnAction(e -> {
             populate.populateMapStandardQuiz();
-            findSelectedQuizType("Capital");
-            whenAction();
+            whenButtonPressed("Capital");
         });
 
         Button startQuizEuropeCapitalBtn = new Button();
         startQuizEuropeCapitalBtn.setText("Europe capitals");
         startQuizEuropeCapitalBtn.setOnAction(event -> {
             populate.populateMapEuropeCapitalQuiz();
-            findSelectedQuizType("Capital");
-            whenAction();
+            whenButtonPressed("Capital");
         });
 
         Button startQuizScandinaviaCapitalBtn = new Button();
         startQuizScandinaviaCapitalBtn.setText("Scandinavia capitals");
         startQuizScandinaviaCapitalBtn.setOnAction(event -> {
             populate.populateMapQuizScandinaviaCapitalQuiz();
-            findSelectedQuizType("Capital");
-            whenAction();
+            whenButtonPressed("Capital");
         });
 
         Button startQuizAsiaCountryBtn = new Button();
         startQuizAsiaCountryBtn.setText("Countries in Asia");
         startQuizAsiaCountryBtn.setOnAction(event -> {
             populate.populateMapQuizAsiaCountriesQuiz();
-            findSelectedQuizType("Country");
-            whenAction();
+            whenButtonPressed("Country");
 
         });
 
@@ -107,7 +103,7 @@ public class Main extends Application {
 
         quizGrid.setGridLinesVisible(false);
 
-        // Quizscore scene
+        // QuizScore scene
         Button returnToMenuBtn = new Button();
 
         returnToMenuBtn.setText("Return to menu");
@@ -132,11 +128,12 @@ public class Main extends Application {
         sceneMenu.getStylesheets().add(Main.class.getResource("Style.css").toString());
         sceneQuiz.getStylesheets().add(Main.class.getResource("Style.css").toString());
         sceneQuizScore.getStylesheets().add(Main.class.getResource("Style.css").toExternalForm()); // .toExternalForm and toString() is the same
-        primaryStage.show();
+        window.show();
         // answer.addEventFilter(Event.ANY,e -> System.out.println(e));
     }
 
-    private void whenAction() {
+    private void whenButtonPressed(String quiz) {
+        findSelectedQuizType(quiz);
         startQuizScene();
         window.setScene(sceneQuiz);
     }
@@ -230,6 +227,7 @@ public class Main extends Application {
                 checkAnswer(rightAnswer);
             }
         });
+
         skipQuestionBtn.setOnAction((ActionEvent e) -> {
             if (skipQuestionBtn.getText().equalsIgnoreCase("skip")) {
                 response.setText("The correct answer is " + rightAnswer);

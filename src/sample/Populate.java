@@ -5,6 +5,11 @@ import java.util.Map;
 
 public class Populate {
     private int counter = 0;
+    private Map<Integer, Country> countries;
+
+    public Populate(){
+        countries = new HashMap<>();
+    }
 
     public int getCounter() {
         return counter;
@@ -14,12 +19,7 @@ public class Populate {
         this.counter = counter;
     }
 
-    private Map<Integer, Country> countries;
-    public Populate(){
-        countries = new HashMap<>();
 
-
-    }
 
     public int size(){
         return countries.size();

@@ -7,6 +7,13 @@ public class Country {
     private String capital;
     private String flagPicturePath;
 
+    public Country(String countryName, String capital, String flagPicturePath) {
+
+        this.countryName = countryName;
+        this.capital = capital;
+        this.flagPicturePath = flagPicturePath;
+    }
+
     public String getCountryName() {
         return countryName;
     }
@@ -56,10 +63,5 @@ public class Country {
         this.flagPicturePath = flagPicturePath;
     }
 
-    public Country(String countryName, String capital, String flagPicturePath) {
 
-        this.countryName = countryName;
-        this.capital = capital;
-        this.flagPicturePath = flagPicturePath;
-    }
 }
